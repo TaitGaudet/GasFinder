@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GasFinder — West Point</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161a23;
+      --card:      #1c2130;
+      --border:    #2a3042;
+      --accent:    #f5a623;
+      --accent2:   #e8473f;
+      --green:     #3ecf8e;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --font-head: 'Bebas Neue', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --font-body: 'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(245,166,35,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,166,35,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 2rem 2.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .logo-main {
+      font-family: var(--font-head);
+      font-size: 3.5rem;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      text-shadow: 0 0 40px rgba(245,166,35,0.3);
+    }
+
+    .logo-sub {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 0.1rem;
+    }
+
+    .header-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: right;
+      letter-spacing: 0.05em;
+    }
+
+    .header-meta span {
+      color: var(--green);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2rem 2.5rem 4rem;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-value {
+      font-family: var(--font-head);
+      font-size: 2.2rem;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+      line-height: 1;
+    }
+
+    .stat-value.green { color: var(--green); }
+    .stat-value.red   { color: var(--accent2); }
+
+    .stat-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 160px;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--accent);
+    }
+
+    .field select option { background: var(--card); }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-left: auto;
+      align-items: flex-end;
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.55rem 1.25rem;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #fbbf24;
+      border-color: #fbbf24;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-green {
+      background: transparent;
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .btn-green:hover {
+      background: var(--green);
+      color: #000;
+    }
+
+    /* ── RECOMMEND BANNER ── */
+    #recommend-banner {
+      display: none;
+      background: linear-gradient(135deg, rgba(62,207,142,0.1), rgba(62,207,142,0.05));
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    #recommend-banner .rec-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--green);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    #recommend-banner .rec-name {
+      font-family: var(--font-head);
+      font-size: 1.8rem;
+      color: var(--green);
+      letter-spacing: 0.04em;
+    }
+
+    #recommend-banner .rec-detail {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    #station-count {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    #station-count span { color: var(--accent); }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.85rem 1.25rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover { background: rgba(245,166,35,0.04); }
+
+    td {
+      padding: 1rem 1.25rem;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+
+    .td-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .td-address {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .td-dist {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .price-tag {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .price-tag.best { color: var(--green); }
+    .price-tag.high { color: var(--accent2); }
+    .price-tag.mid  { color: var(--accent); }
+    .price-tag.norm { color: var(--text); }
+
+    .badge-dist {
+      display: inline-block;
+      background: rgba(245,166,35,0.1);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      border: 1px solid rgba(245,166,35,0.2);
+    }
+
+    /* ── LOADING / EMPTY ── */
+    .state-msg {
+      text-align: center;
+      padding: 3rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .toolbar-actions { margin-left: 0; }
+      th:nth-child(n+5), td:nth-child(n+5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-main">GASFINDER</span>
+    <span class="logo-sub">West Point, NY 10997 &nbsp;·&nbsp; Live Station Monitor</span>
+  </div>
+  <div class="header-meta">
+    SYSTEM STATUS &nbsp;<span>● ONLINE</span><br>
+    <span id="clock">--:--:--</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-label">Stations Tracked</div>
+      <div class="stat-value" id="stat-count">—</div>
+      <div class="stat-desc">Within radius</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Lowest Regular</div>
+      <div class="stat-value green" id="stat-low">—</div>
+      <div class="stat-desc" id="stat-low-name">Loading...</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Highest Regular</div>
+      <div class="stat-value red" id="stat-high">—</div>
+      <div class="stat-desc" id="stat-high-name">Loading...</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Regular Price</div>
+      <div class="stat-value" id="stat-avg">—</div>
+      <div class="stat-desc">All stations</div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="field">
+      <label>Max Price ($/gal)</label>
+      <input type="number" id="filter-price" placeholder="e.g. 3.20" step="0.01" min="0"/>
+    </div>
+    <div class="field">
+      <label>Max Distance (mi)</label>
+      <input type="number" id="filter-dist" placeholder="e.g. 5.0" step="0.1" min="0"/>
+    </div>
+    <div class="field">
+      <label>Fuel Type</label>
+      <select id="filter-fuel">
+        <option value="">All Types</option>
+        <option value="regular">Regular</option>
+        <option value="midgrade">Midgrade</option>
+        <option value="premium">Premium</option>
+        <option value="diesel">Diesel</option>
+      </select>
+    </div>
+    <div class="toolbar-actions">
+      <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
+      <button class="btn btn-outline" onclick="applyFilters()">Filter</button>
+      <button class="btn btn-green" onclick="getRecommendation()">▶ Recommend</button>
+      <button class="btn btn-primary" onclick="loadStations()">Refresh</button>
+    </div>
+  </div>
+
+  <!-- RECOMMEND BANNER -->
+  <div id="recommend-banner">
+    <div class="rec-label">⚡ Best Pick for Your Criteria</div>
+    <div class="rec-name" id="rec-name">—</div>
+    <div class="rec-detail" id="rec-detail">—</div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="section-header">
+    <div class="section-title">Gas Stations</div>
+    <div id="station-count">Showing <span id="count-num">—</span> stations</div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Station</th>
+          <th>Distance</th>
+          <th>Regular</th>
+          <th>Midgrade</th>
+          <th>Premium</th>
+          <th>Diesel</th>
+        </tr>
+      </thead>
+      <tbody id="station-tbody">
+        <tr><td colspan="6" class="state-msg"><span class="spinner"></span> Loading stations...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<script>
+  const API = 'http://localhost:5000/api';
+
+  // ── CLOCK ──
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ── PRICE COLORING ──
+  function priceClass(price, min, max) {
+    if (price === null || price === undefined) return 'norm';
+    if (price <= min) return 'best';
+    if (price >= max) return 'high';
+    if (price <= (min + max) / 2) return 'mid';
+    return 'norm';
+  }
+
+  function fmt(price) {
+    return price != null ? '$' + parseFloat(price).toFixed(3) : '—';
+  }
+
+  // ── RENDER TABLE ──
+  function renderTable(stations) {
+    const tbody = document.getElementById('station-tbody');
+    document.getElementById('count-num').textContent = stations.length;
+
+    if (!stations.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="state-msg">No stations match your filters.</td></tr>';
+      return;
+    }
+
+    const prices = stations.map(s => parseFloat(s.regular_price)).filter(Boolean);
+    const minP = Math.min(...prices);
+    const maxP = Math.max(...prices);
+
+    tbody.innerHTML = stations.map(s => `
+      <tr>
+        <td>
+          <div class="td-name">${s.name}</div>
+          <div class="td-address">${s.address}</div>
+        </td>
+        <td><span class="badge-dist">${parseFloat(s.distance_miles).toFixed(1)} mi</span></td>
+        <td><span class="price-tag ${priceClass(s.regular_price, minP, maxP)}">${fmt(s.regular_price)}</span></td>
+        <td><span class="price-tag norm">${fmt(s.midgrade_price)}</span></td>
+        <td><span class="price-tag norm">${fmt(s.premium_price)}</span></td>
+        <td><span class="price-tag norm">${fmt(s.diesel_price)}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // ── UPDATE STATS ──
+  function updateStats(stations) {
+    if (!stations.length) return;
+    const prices = stations.map(s => ({ name: s.name, price: parseFloat(s.regular_price) }));
+    const sorted = [...prices].sort((a, b) => a.price - b.price);
+    const avg = prices.reduce((s, p) => s + p.price, 0) / prices.length;
+
+    document.getElementById('stat-count').textContent = stations.length;
+    document.getElementById('stat-low').textContent = '$' + sorted[0].price.toFixed(3);
+    document.getElementById('stat-low-name').textContent = sorted[0].name;
+    document.getElementById('stat-high').textContent = '$' + sorted[sorted.length - 1].price.toFixed(3);
+    document.getElementById('stat-high-name').textContent = sorted[sorted.length - 1].name;
+    document.getElementById('stat-avg').textContent = '$' + avg.toFixed(3);
+  }
+
+  // ── LOAD ALL STATIONS ──
+  async function loadStations() {
+    document.getElementById('station-tbody').innerHTML =
+      '<tr><td colspan="6" class="state-msg"><span class="spinner"></span> Loading...</td></tr>';
+    document.getElementById('recommend-banner').style.display = 'none';
+
+    try {
+      const res = await fetch(`${API}/stations`);
+      const data = await res.json();
+      renderTable(data);
+      updateStats(data);
+    } catch (e) {
+      document.getElementById('station-tbody').innerHTML =
+        '<tr><td colspan="6" class="state-msg">Failed to connect to backend.</td></tr>';
+    }
+  }
+
+  // ── APPLY FILTERS ──
+  async function applyFilters() {
+    const price = document.getElementById('filter-price').value;
+    const dist  = document.getElementById('filter-dist').value;
+    const fuel  = document.getElementById('filter-fuel').value;
+
+    const params = new URLSearchParams();
+    if (price) params.append('max_price', price);
+    if (dist)  params.append('max_distance', dist);
+    if (fuel)  params.append('fuel_type', fuel);
+
+    document.getElementById('station-tbody').innerHTML =
+      '<tr><td colspan="6" class="state-msg"><span class="spinner"></span> Filtering...</td></tr>';
+
+    try {
+      const res = await fetch(`${API}/stations/filter?${params}`);
+      const data = await res.json();
+      renderTable(data);
+      updateStats(data);
+    } catch (e) {
+      document.getElementById('station-tbody').innerHTML =
+        '<tr><td colspan="6" class="state-msg">Filter request failed.</td></tr>';
+    }
+  }
+
+  // ── RESET FILTERS ──
+  function resetFilters() {
+    document.getElementById('filter-price').value = '';
+    document.getElementById('filter-dist').value  = '';
+    document.getElementById('filter-fuel').value  = '';
+    document.getElementById('recommend-banner').style.display = 'none';
+    loadStations();
+  }
+
+  // ── RECOMMENDATION ──
+  async function getRecommendation() {
+    const fuel = document.getElementById('filter-fuel').value || 'regular';
+
+    try {
+      const res = await fetch(`${API}/stations/recommend?fuel_type=${fuel}`);
+      const s = await res.json();
+
+      if (s.error) return;
+
+      const banner = document.getElementById('recommend-banner');
+      document.getElementById('rec-name').textContent = s.name;
+      document.getElementById('rec-detail').textContent =
+        `${s.address}  ·  ${parseFloat(s.distance_miles).toFixed(1)} mi away  ·  Regular: ${fmt(s.regular_price)}`;
+      banner.style.display = 'block';
+      banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) {
+      console.error('Recommend failed', e);
+    }
+  }
+
+  // ── INIT ──
+  loadStations();
+</script>
+</body>
+</html>
