@@ -37,9 +37,9 @@ CREATE TABLE IF NOT EXISTS users (
     preffered_fuel ENUM('Regular', 'Midgrade', 'Premium', 'Diesel') NOT NULL,
     car_make VARCHAR(100),
     car_model VARCHAR(100),
-    car_year INT,
-    tank_size DECIMAL(5,2),
-    mpg DECIMAL(5,2),
+    car_year INT(4),
+    tank_size DECIMAL(3,1),
+    mpg DECIMAL(3,1),
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
