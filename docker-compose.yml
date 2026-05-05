@@ -1,0 +1,30 @@
+services:
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_USER=gasuser
+      - DB_PASSWORD=gaspass
+      - DB_NAME=gasdb
+
+  database:
+    build: ./database
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data: {}
