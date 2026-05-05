@@ -30,3 +30,16 @@ CREATE TABLE IF NOT EXISTS price_history (
     recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (station_id) REFERENCES stations(id)
 );
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    preffered_fuel ENUM('Regular', 'Midgrade', 'Premium', 'Diesel') NOT NULL,
+    car_make VARCHAR(100),
+    car_model VARCHAR(100),
+    car_year INT,
+    tank_size DECIMAL(5,2),
+    mpg DECIMAL(5,2),
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
