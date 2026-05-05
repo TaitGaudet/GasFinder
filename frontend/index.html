@@ -667,9 +667,17 @@
   // ── RECOMMENDATION ──
   async function getRecommendation() {
     const fuel = document.getElementById('filter-fuel').value || 'regular';
+    const dist  = document.getElementById('filter-dist').value;
+    const price = document.getElementById('filter-price').value;
+
+    const params = new URLSearchParams();
+    if (price) params.append('max_price', price);
+    if (dist)  params.append('max_distance', dist);
+    if (fuel)  params.append('fuel_type', fuel);
 
     try {
-      const res = await fetch(`${API}/stations/recommend?fuel_type=${fuel}`);
+      // Claude helped me realize my API url was wrong. /recommend below was /filter.
+      const res = await fetch(`${API}/stations/recommend?${params}`);
       const s = await res.json();
 
       if (s.error) return;
