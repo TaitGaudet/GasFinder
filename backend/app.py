@@ -167,15 +167,42 @@ def recommend():
         along with its calculated score.
         404: A JSON error message if no stations are found.
     """
+
+    max_price = request.args.get('max_price')
+    max_distance = request.args.get('max_distance')
+    fuel_type = request.args.get('fuel_type')
+
+    valid_fuel_types = ['regular', 'midgrade', 'premium', 'diesel']
+
+    if fuel_type and fuel_type not in valid_fuel_types:
+        return jsonify({'error': 'Invalid fuel type'}), 400
+    
+    query = "SELECT * FROM stations"
+    conditions = []
+    values = []
+
+    if max_price:
+        conditions.append("regular_price <= %s")
+        values.append(float(max_price))
+    
+    if max_distance:
+        conditions.append("distance_miles <= %s")
+        values.append(float(max_distance))
+    
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+    
+    if fuel_type:
+        query += " ORDER BY " + fuel_type + "_price ASC"
+        
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM stations")
+    cursor.execute(query, values)
     stations = cursor.fetchall()
 
     gas_list = []
     
-    fuel_type = request.args.get('fuel_type', 'regular')
     price = fuel_type + '_price'
 
     for station in stations:
