@@ -372,6 +372,14 @@ def get_price_history(station_id):
 
     return jsonify(result)
 
+# ─────────────────────────────────────────────
+# User Creation
+# ─────────────────────────────────────────────
+
+# @app.route('/api/register', methods=['POST'])
+# def register_user():
+#     pass
+
 
 # ─────────────────────────────────────────────
 # ENTRY POINT
