@@ -349,9 +349,9 @@ def get_price_history(station_id):
 # User Creation
 # ─────────────────────────────────────────────
 
-# @app.route('/api/register', methods=['POST'])
-# def register_user():
-#     pass
+@app.route('/api/register', methods=['POST'])
+def register_user():
+    name = request.form.get('user_name')
 
 
 # ─────────────────────────────────────────────
