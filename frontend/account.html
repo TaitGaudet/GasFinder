@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GasFinder — Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161a23;
+      --card:      #1c2130;
+      --border:    #2a3042;
+      --accent:    #f5a623;
+      --accent2:   #e8473f;
+      --green:     #3ecf8e;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --font-head: 'Bebas Neue', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --font-body: 'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(245,166,35,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,166,35,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 2rem 2.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo { display: flex; flex-direction: column; line-height: 1; }
+
+    .logo-main {
+      font-family: var(--font-head);
+      font-size: 3.5rem;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      text-shadow: 0 0 40px rgba(245,166,35,0.3);
+    }
+
+    .logo-sub {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 0.1rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .header-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: right;
+      letter-spacing: 0.05em;
+    }
+
+    .header-meta span { color: var(--green); }
+
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.45rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── MAIN ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 2.5rem 4rem;
+    }
+
+    /* ── PANEL (shared card style) ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+
+    .panel-title {
+      font-family: var(--font-head);
+      font-size: 2.2rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .panel-sub {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    /* ── FORM GRID ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 4px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .field input:focus,
+    .field select:focus { border-color: var(--accent); }
+    .field select option { background: var(--card); }
+
+    .field-full { grid-column: 1 / -1; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.5rem;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .btn-primary:hover { background: #fbbf24; border-color: #fbbf24; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--accent2);
+      border-color: var(--accent2);
+    }
+
+    .btn-danger:hover { background: var(--accent2); color: #fff; }
+
+    /* ── AUTH TOGGLE ── */
+    .auth-toggle {
+      text-align: center;
+      margin-top: 1.25rem;
+    }
+
+    .auth-toggle a {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .auth-toggle a:hover { text-decoration: underline; }
+
+    /* ── PROFILE DISPLAY ── */
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .profile-header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .profile-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+    }
+
+    .profile-item-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .profile-item-value {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .profile-item-value.accent { color: var(--accent); }
+    .profile-item-value.green  { color: var(--green); }
+    .profile-item-value.muted  { color: var(--muted); font-weight: 400; font-style: italic; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    /* ── FAVORITES SECTION ── */
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead tr { border-bottom: 1px solid var(--border); }
+
+    th {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(245,166,35,0.04); }
+
+    td {
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+
+    .td-name { font-weight: 600; }
+
+    .td-address {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .price-tag {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .badge-dist {
+      display: inline-block;
+      background: rgba(245,166,35,0.1);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.12rem 0.45rem;
+      border-radius: 3px;
+      border: 1px solid rgba(245,166,35,0.2);
+    }
+
+    .btn-remove {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 3px;
+      border: 1px solid var(--accent2);
+      background: transparent;
+      color: var(--accent2);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-remove:hover { background: var(--accent2); color: #fff; }
+
+    /* ── STATE MESSAGES ── */
+    .state-msg {
+      text-align: center;
+      padding: 2.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    /* ── ERROR ── */
+    .error-msg {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent2);
+      margin-top: 0.75rem;
+      text-align: center;
+      min-height: 1rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-main">GASFINDER</span>
+    <span class="logo-sub">West Point, NY 10997 &nbsp;·&nbsp; Account</span>
+  </div>
+  <div class="header-right">
+    <a href="/index.html" class="nav-link">← Dashboard</a>
+    <div class="header-meta">
+      SYSTEM STATUS &nbsp;<span>● ONLINE</span><br>
+      <span id="clock">--:--:--</span>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+  <!-- Content injected by JavaScript -->
+</main>
+
+<script>
+  const API = 'http://localhost:5000/api';
+
+  // ── CLOCK ──
+  function updateClock() {
+    document.getElementById('clock').textContent =
+      new Date().toLocaleTimeString('en-US', { hour12: false });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function fmt(price) {
+    return price != null ? '$' + parseFloat(price).toFixed(3) : '—';
+  }
+
+  function fmtDate(ts) {
+    if (!ts) return '—';
+    return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // ── RENDER: AUTH GATE ──
+  function renderAuthGate(loginMode = false) {
+    const main = document.getElementById('main-content');
+
+    if (loginMode) {
+      main.innerHTML = `
+        <div class="panel">
+          <div class="panel-title">System Access</div>
+          <div class="panel-sub">Enter your credentials to continue</div>
+          <div class="form-grid" style="grid-template-columns: 1fr;">
+            <div class="field">
+              <label for="login-username">Username</label>
+              <input type="text" id="login-username" autocomplete="off" placeholder="Your username"/>
+            </div>
+            <div class="field">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" placeholder="Your password"/>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="submitLogin()">Authenticate</button>
+          <div class="error-msg" id="login-error"></div>
+          <div class="auth-toggle">
+            <a href="#" onclick="renderAuthGate(false); return false;">Need a profile? Register here.</a>
+          </div>
+        </div>
+      `;
+    } else {
+      main.innerHTML = `
+        <div class="panel">
+          <div class="panel-title">Vehicle Profile</div>
+          <div class="panel-sub">Register to unlock personalized fuel tracking</div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="reg-username">Username</label>
+              <input type="text" id="reg-username" autocomplete="off" placeholder="Choose a username"/>
+            </div>
+            <div class="field">
+              <label for="reg-password">Password</label>
+              <input type="password" id="reg-password" placeholder="Choose a password"/>
+            </div>
+            <div class="field">
+              <label for="reg-fuel">Preferred Fuel</label>
+              <select id="reg-fuel">
+                <option value="" disabled selected>-- Select --</option>
+                <option value="Regular">Regular</option>
+                <option value="Midgrade">Midgrade</option>
+                <option value="Premium">Premium</option>
+                <option value="Diesel">Diesel</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="reg-make">Car Make</label>
+              <input type="text" id="reg-make" placeholder="e.g. Ford"/>
+            </div>
+            <div class="field">
+              <label for="reg-model">Car Model</label>
+              <input type="text" id="reg-model" placeholder="e.g. F-150"/>
+            </div>
+            <div class="field">
+              <label for="reg-year">Year</label>
+              <input type="number" id="reg-year" min="1950" max="2027" placeholder="e.g. 2022"/>
+            </div>
+            <div class="field">
+              <label for="reg-tank">Tank Size (gal)</label>
+              <input type="number" id="reg-tank" step="0.1" placeholder="e.g. 26.0"/>
+            </div>
+            <div class="field">
+              <label for="reg-mpg">Average MPG</label>
+              <input type="number" id="reg-mpg" step="0.1" placeholder="e.g. 24.5"/>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="submitRegister()">Initialize Profile</button>
+          <div class="error-msg" id="reg-error"></div>
+          <div class="auth-toggle">
+            <a href="#" onclick="renderAuthGate(true); return false;">Already registered? Log in here.</a>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // ── RENDER: PROFILE ──
+  function renderProfile(user, favorites) {
+    const main = document.getElementById('main-content');
+
+    const vehicle = [user.car_year, user.car_make, user.car_model].filter(Boolean).join(' ') || null;
+
+    const favRows = favorites.length
+      ? favorites.map(s => `
+          <tr>
+            <td>
+              <div class="td-name">${s.name}</div>
+              <div class="td-address">${s.address}</div>
+            </td>
+            <td><span class="badge-dist">${parseFloat(s.distance_miles).toFixed(1)} mi</span></td>
+            <td><span class="price-tag">${fmt(s.regular_price)}</span></td>
+            <td style="font-family:var(--font-mono);font-size:0.78rem;color:var(--muted)">${fmtDate(s.added_on)}</td>
+            <td><button class="btn-remove" onclick="removeFavorite(${s.id})">Remove</button></td>
+          </tr>
+        `).join('')
+      : '<tr><td colspan="5" class="state-msg">No favorites saved yet. Add some from the dashboard.</td></tr>';
+
+    main.innerHTML = `
+      <div class="panel">
+
+        <div class="profile-header">
+          <div>
+            <div class="panel-title">Welcome back, ${user.username}!</div>
+            <div class="panel-sub">Your Active Vehicle Profile</div>
+          </div>
+          <div class="profile-header-actions">
+            <button class="btn btn-danger" onclick="logout()">Log Out</button>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <div class="profile-item">
+            <div class="profile-item-label">Username</div>
+            <div class="profile-item-value accent">${user.username}</div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-item-label">Preferred Fuel</div>
+            <div class="profile-item-value green">${user.preffered_fuel || '—'}</div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-item-label">Vehicle</div>
+            <div class="profile-item-value ${vehicle ? '' : 'muted'}">${vehicle || 'Not set'}</div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-item-label">Tank Size</div>
+            <div class="profile-item-value ${user.tank_size ? '' : 'muted'}">
+              ${user.tank_size ? user.tank_size + ' gal' : 'Not set'}
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-item-label">Average MPG</div>
+            <div class="profile-item-value ${user.mpg ? '' : 'muted'}">
+              ${user.mpg ? user.mpg + ' mpg' : 'Not set'}
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-item-label">Member Since</div>
+            <div class="profile-item-value muted">${fmtDate(user.created_at)}</div>
+          </div>
+        </div>
+
+        <hr class="divider"/>
+
+        <div class="section-label">★ Saved Favorites</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Station</th>
+                <th>Distance</th>
+                <th>Regular</th>
+                <th>Saved On</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="favorites-tbody">
+              ${favRows}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    `;
+  }
+
+  // ── SUBMIT LOGIN ──
+  async function submitLogin() {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errEl    = document.getElementById('login-error');
+    errEl.textContent = '';
+
+    if (!username || !password) {
+      errEl.textContent = 'Please enter your username and password.';
+      return;
+    }
+
+    try {
+      const fd = new FormData();
+      fd.append('username', username);
+      fd.append('password', password);
+
+      const res  = await fetch(`${API}/login`, { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem('gasfinder_user', data.username);
+        loadPage();
+      } else {
+        errEl.textContent = data.error || 'Login failed.';
+      }
+    } catch (e) {
+      document.getElementById('login-error').textContent = 'Could not connect to server.';
+    }
+  }
+
+  // ── SUBMIT REGISTER ──
+  async function submitRegister() {
+    const username = document.getElementById('reg-username').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const fuel     = document.getElementById('reg-fuel').value;
+    const errEl    = document.getElementById('reg-error');
+    errEl.textContent = '';
+
+    if (!username || !password || !fuel) {
+      errEl.textContent = 'Username, password, and fuel type are required.';
+      return;
+    }
+
+    try {
+      const fd = new FormData();
+      fd.append('username',      username);
+      fd.append('password',      password);
+      fd.append('preffered_fuel', fuel);
+      fd.append('car_make',      document.getElementById('reg-make').value);
+      fd.append('car_model',     document.getElementById('reg-model').value);
+      fd.append('car_year',      document.getElementById('reg-year').value);
+      fd.append('tank_size',     document.getElementById('reg-tank').value);
+      fd.append('mpg',           document.getElementById('reg-mpg').value);
+
+      const res  = await fetch(`${API}/register`, { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem('gasfinder_user', data.username);
+        loadPage();
+      } else {
+        errEl.textContent = data.error || 'Registration failed.';
+      }
+    } catch (e) {
+      document.getElementById('reg-error').textContent = 'Could not connect to server.';
+    }
+  }
+
+  // ── REMOVE FAVORITE ──
+  async function removeFavorite(stationId) {
+    try {
+      await fetch(`${API}/favorites/${stationId}`, { method: 'DELETE' });
+      loadPage();
+    } catch (e) {
+      console.error('Remove failed', e);
+    }
+  }
+
+  // ── LOGOUT ──
+  function logout() {
+    localStorage.removeItem('gasfinder_user');
+    renderAuthGate(true);
+  }
+
+  // ── LOAD PAGE ──
+  async function loadPage() {
+    const savedUser = localStorage.getItem('gasfinder_user');
+
+    if (!savedUser) {
+      renderAuthGate(true);
+      return;
+    }
+
+    document.getElementById('main-content').innerHTML =
+      `<div class="panel"><div class="state-msg"><span class="spinner"></span> Loading profile...</div></div>`;
+
+    try {
+      const [profileRes, favRes] = await Promise.all([
+        fetch(`${API}/profile?username=${savedUser}`),
+        fetch(`${API}/favorites`)
+      ]);
+
+      if (!profileRes.ok) {
+        localStorage.removeItem('gasfinder_user');
+        renderAuthGate(true);
+        return;
+      }
+
+      const user      = await profileRes.json();
+      const favorites = await favRes.json();
+
+      renderProfile(user, favorites);
+
+    } catch (e) {
+      document.getElementById('main-content').innerHTML =
+        `<div class="panel"><div class="state-msg">Failed to connect to backend.</div></div>`;
+    }
+  }
+
+  // ── INIT ──
+  loadPage();
+</script>
+</body>
+</html>

@@ -31,7 +31,6 @@
       overflow-x: hidden;
     }
 
-    /* Subtle grid background */
     body::before {
       content: '';
       position: fixed;
@@ -79,6 +78,12 @@
       margin-top: 0.1rem;
     }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
     .header-meta {
       font-family: var(--font-mono);
       font-size: 0.7rem;
@@ -87,8 +92,24 @@
       letter-spacing: 0.05em;
     }
 
-    .header-meta span {
-      color: var(--green);
+    .header-meta span { color: var(--green); }
+
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.45rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover {
+      color: var(--accent);
+      border-color: var(--accent);
     }
 
     /* ── MAIN LAYOUT ── */
@@ -148,7 +169,6 @@
       gap: 1.25rem;
     }
 
-    /* Override the 160px width from the toolbar just for this section */
     .register-grid .field input,
     .register-grid .field select {
       width: 100%;
@@ -256,10 +276,7 @@
     }
 
     .field input:focus,
-    .field select:focus {
-      border-color: var(--accent);
-    }
-
+    .field select:focus { border-color: var(--accent); }
     .field select option { background: var(--card); }
 
     .toolbar-actions {
@@ -269,6 +286,7 @@
       align-items: flex-end;
     }
 
+    /* ── BUTTONS ── */
     .btn {
       font-family: var(--font-mono);
       font-size: 0.75rem;
@@ -313,6 +331,38 @@
     .btn-green:hover {
       background: var(--green);
       color: #000;
+    }
+
+    /* ── STAR BUTTON ── */
+    .btn-star {
+      background: transparent;
+      border: 1px solid transparent;
+      font-size: 1.1rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      line-height: 1;
+    }
+
+    .btn-star:hover {
+      color: var(--accent);
+      border-color: rgba(245,166,35,0.3);
+      background: rgba(245,166,35,0.08);
+      transform: scale(1.15);
+    }
+
+    .btn-star.active {
+      color: var(--accent);
+      border-color: rgba(245,166,35,0.3);
+      background: rgba(245,166,35,0.08);
+    }
+
+    .btn-star.active:hover {
+      color: var(--accent2);
+      border-color: rgba(232,71,63,0.3);
+      background: rgba(232,71,63,0.08);
     }
 
     /* ── RECOMMEND BANNER ── */
@@ -382,10 +432,7 @@
       animation: fadeUp 0.5s 0.2s ease both;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    table { width: 100%; border-collapse: collapse; }
 
     thead tr {
       background: var(--card);
@@ -409,7 +456,6 @@
     }
 
     tbody tr:last-child { border-bottom: none; }
-
     tbody tr:hover { background: rgba(245,166,35,0.04); }
 
     td {
@@ -418,22 +464,12 @@
       vertical-align: middle;
     }
 
-    .td-name {
-      font-weight: 600;
-      color: var(--text);
-    }
+    .td-name { font-weight: 600; color: var(--text); }
 
     .td-address {
       font-size: 0.78rem;
       color: var(--muted);
       font-family: var(--font-mono);
-    }
-
-    .td-dist {
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      color: var(--muted);
-      white-space: nowrap;
     }
 
     .price-tag {
@@ -505,14 +541,18 @@
     <span class="logo-main">GASFINDER</span>
     <span class="logo-sub">West Point, NY 10997 &nbsp;·&nbsp; Live Station Monitor</span>
   </div>
-  <div class="header-meta">
-    SYSTEM STATUS &nbsp;<span>● ONLINE</span><br>
-    <span id="clock">--:--:--</span>
+  <div class="header-right">
+    <a href="/account.html" class="nav-link">★ Account</a>
+    <div class="header-meta">
+      SYSTEM STATUS &nbsp;<span>● ONLINE</span><br>
+      <span id="clock">--:--:--</span>
+    </div>
   </div>
 </header>
 
 <main>
 
+  <!-- REGISTRATION / PROFILE SECTION -->
   <div class="register-wrap">
     <div class="register-header">
       <h2 id="auth-title">Vehicle Profile</h2>
@@ -521,7 +561,7 @@
 
     <form id="registerForm" onsubmit="submitAuth(event)">
       <div class="register-grid">
-        
+
         <div class="field">
           <label for="username">System Username</label>
           <input type="text" id="username" name="username" required autocomplete="off">
@@ -570,10 +610,10 @@
 
       </div>
 
-      <div class="register-actions" style="flex-direction: column; align-items: center; gap: 1rem;">
-        <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%;">Initialize Profile</button>
-        
-        <a href="#" onclick="toggleAuthMode(event)" id="auth-toggle-btn" style="color: var(--accent); font-family: var(--font-mono); font-size: 0.75rem; text-decoration: none;">
+      <div class="register-actions" style="flex-direction:column;align-items:center;gap:1rem;">
+        <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width:100%;">Initialize Profile</button>
+        <a href="#" onclick="toggleAuthMode(event)" id="auth-toggle-btn"
+           style="color:var(--accent);font-family:var(--font-mono);font-size:0.75rem;text-decoration:none;">
           Already registered? Log in here.
         </a>
       </div>
@@ -627,7 +667,7 @@
     <div class="toolbar-actions">
       <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
       <button class="btn btn-outline" onclick="applyFilters()">Filter</button>
-      <button class="btn btn-green" onclick="getRecommendation()">▶ Recommend</button>
+      <button class="btn btn-green"   onclick="getRecommendation()">▶ Recommend</button>
       <button class="btn btn-primary" onclick="loadStations()">Refresh</button>
     </div>
   </div>
@@ -655,10 +695,11 @@
           <th>Midgrade</th>
           <th>Premium</th>
           <th>Diesel</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="station-tbody">
-        <tr><td colspan="6" class="state-msg"><span class="spinner"></span> Loading stations...</td></tr>
+        <tr><td colspan="7" class="state-msg"><span class="spinner"></span> Loading stations...</td></tr>
       </tbody>
     </table>
   </div>
@@ -666,6 +707,7 @@
 </main>
 
 <script>
+  let favoritedIds = new Set();
   const API = 'http://localhost:5000/api';
 
   // ── CLOCK ──
@@ -676,7 +718,7 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // ── PRICE COLORING ──
+  // ── HELPERS ──
   function priceClass(price, min, max) {
     if (price === null || price === undefined) return 'norm';
     if (price <= min) return 'best';
@@ -689,13 +731,47 @@
     return price != null ? '$' + parseFloat(price).toFixed(3) : '—';
   }
 
+  // ── FAVORITES ──
+  async function loadFavoritedIds() {
+    try {
+      const res  = await fetch(`${API}/favorites`);
+      const data = await res.json();
+      data.forEach(s => favoritedIds.add(s.id));
+    } catch (e) {
+      console.error('Could not load favorites', e);
+    }
+  }
+
+  async function toggleFavorite(stationId) {
+    const btn = document.getElementById(`star-${stationId}`);
+    if (favoritedIds.has(stationId)) {
+      await fetch(`${API}/favorites/${stationId}`, { method: 'DELETE' });
+      favoritedIds.delete(stationId);
+      btn.textContent = '☆';
+      btn.classList.remove('active');
+      btn.title = 'Add to favorites';
+    } else {
+      const res = await fetch(`${API}/favorites`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ station_id: stationId })
+      });
+      if (res.ok) {
+        favoritedIds.add(stationId);
+        btn.textContent = '★';
+        btn.classList.add('active');
+        btn.title = 'Remove from favorites';
+      }
+    }
+  }
+
   // ── RENDER TABLE ──
   function renderTable(stations) {
     const tbody = document.getElementById('station-tbody');
     document.getElementById('count-num').textContent = stations.length;
 
     if (!stations.length) {
-      tbody.innerHTML = '<tr><td colspan="6" class="state-msg">No stations match your filters.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="state-msg">No stations match your filters.</td></tr>';
       return;
     }
 
@@ -714,6 +790,15 @@
         <td><span class="price-tag norm">${fmt(s.midgrade_price)}</span></td>
         <td><span class="price-tag norm">${fmt(s.premium_price)}</span></td>
         <td><span class="price-tag norm">${fmt(s.diesel_price)}</span></td>
+        <td>
+          <button
+            onclick="toggleFavorite(${s.id})"
+            id="star-${s.id}"
+            class="btn-star ${favoritedIds.has(s.id) ? 'active' : ''}"
+            title="${favoritedIds.has(s.id) ? 'Remove from favorites' : 'Add to favorites'}">
+            ${favoritedIds.has(s.id) ? '★' : '☆'}
+          </button>
+        </td>
       </tr>
     `).join('');
   }
@@ -723,7 +808,7 @@
     if (!stations.length) return;
     const prices = stations.map(s => ({ name: s.name, price: parseFloat(s.regular_price) }));
     const sorted = [...prices].sort((a, b) => a.price - b.price);
-    const avg = prices.reduce((s, p) => s + p.price, 0) / prices.length;
+    const avg    = prices.reduce((s, p) => s + p.price, 0) / prices.length;
 
     document.getElementById('stat-count').textContent = stations.length;
     document.getElementById('stat-low').textContent = '$' + sorted[0].price.toFixed(3);
@@ -736,17 +821,17 @@
   // ── LOAD ALL STATIONS ──
   async function loadStations() {
     document.getElementById('station-tbody').innerHTML =
-      '<tr><td colspan="6" class="state-msg"><span class="spinner"></span> Loading...</td></tr>';
+      '<tr><td colspan="7" class="state-msg"><span class="spinner"></span> Loading...</td></tr>';
     document.getElementById('recommend-banner').style.display = 'none';
 
     try {
-      const res = await fetch(`${API}/stations`);
+      const res  = await fetch(`${API}/stations`);
       const data = await res.json();
       renderTable(data);
       updateStats(data);
     } catch (e) {
       document.getElementById('station-tbody').innerHTML =
-        '<tr><td colspan="6" class="state-msg">Failed to connect to backend.</td></tr>';
+        '<tr><td colspan="7" class="state-msg">Failed to connect to backend.</td></tr>';
     }
   }
 
@@ -762,16 +847,16 @@
     if (fuel)  params.append('fuel_type', fuel);
 
     document.getElementById('station-tbody').innerHTML =
-      '<tr><td colspan="6" class="state-msg"><span class="spinner"></span> Filtering...</td></tr>';
+      '<tr><td colspan="7" class="state-msg"><span class="spinner"></span> Filtering...</td></tr>';
 
     try {
-      const res = await fetch(`${API}/stations/filter?${params}`);
+      const res  = await fetch(`${API}/stations/filter?${params}`);
       const data = await res.json();
       renderTable(data);
       updateStats(data);
     } catch (e) {
       document.getElementById('station-tbody').innerHTML =
-        '<tr><td colspan="6" class="state-msg">Filter request failed.</td></tr>';
+        '<tr><td colspan="7" class="state-msg">Filter request failed.</td></tr>';
     }
   }
 
@@ -786,7 +871,7 @@
 
   // ── RECOMMENDATION ──
   async function getRecommendation() {
-    const fuel = document.getElementById('filter-fuel').value || 'regular';
+    const fuel  = document.getElementById('filter-fuel').value || 'regular';
     const dist  = document.getElementById('filter-dist').value;
     const price = document.getElementById('filter-price').value;
 
@@ -796,9 +881,8 @@
     if (fuel)  params.append('fuel_type', fuel);
 
     try {
-      // Claude helped me realize my API url was wrong. /recommend below was /filter.
       const res = await fetch(`${API}/stations/recommend?${params}`);
-      const s = await res.json();
+      const s   = await res.json();
 
       if (s.error) return;
 
@@ -813,61 +897,50 @@
     }
   }
 
-  // ── AUTHENTICATION SYSTEM ──
+  // ── AUTHENTICATION ──
   let isLoginMode = false;
 
   function toggleAuthMode(event) {
-    event.preventDefault(); // Stop the link from scrolling to the top
+    event.preventDefault();
     isLoginMode = !isLoginMode;
-    
-    const extraFields = document.querySelectorAll('.extra-field');
-    const title = document.getElementById('auth-title');
-    const subtitle = document.getElementById('auth-subtitle');
-    const submitBtn = document.getElementById('auth-submit-btn');
-    const toggleBtn = document.getElementById('auth-toggle-btn');
+
+    const extraFields  = document.querySelectorAll('.extra-field');
+    const title        = document.getElementById('auth-title');
+    const subtitle     = document.getElementById('auth-subtitle');
+    const submitBtn    = document.getElementById('auth-submit-btn');
+    const toggleBtn    = document.getElementById('auth-toggle-btn');
     const fuelDropdown = document.getElementById('preffered_fuel');
 
     if (isLoginMode) {
-      // Switch to Login UI
       extraFields.forEach(el => el.style.display = 'none');
-      fuelDropdown.removeAttribute('required'); // Prevent form from demanding fuel type on login
-      
-      title.textContent = "System Access";
-      subtitle.textContent = "Enter your credentials to continue.";
-      submitBtn.textContent = "Authenticate";
-      toggleBtn.textContent = "Need a profile? Register here.";
+      fuelDropdown.removeAttribute('required');
+      title.textContent     = 'System Access';
+      subtitle.textContent  = 'Enter your credentials to continue.';
+      submitBtn.textContent = 'Authenticate';
+      toggleBtn.textContent = 'Need a profile? Register here.';
     } else {
-      // Switch back to Register UI
       extraFields.forEach(el => el.style.display = 'flex');
       fuelDropdown.setAttribute('required', 'true');
-      
-      title.textContent = "Vehicle Profile";
-      subtitle.textContent = "Register to unlock personalized fuel tracking";
-      submitBtn.textContent = "Initialize Profile";
-      toggleBtn.textContent = "Already registered? Log in here.";
+      title.textContent     = 'Vehicle Profile';
+      subtitle.textContent  = 'Register to unlock personalized fuel tracking';
+      submitBtn.textContent = 'Initialize Profile';
+      toggleBtn.textContent = 'Already registered? Log in here.';
     }
   }
 
   async function submitAuth(event) {
-    event.preventDefault(); 
-    const form = document.getElementById('registerForm');
+    event.preventDefault();
+    const form     = document.getElementById('registerForm');
     const formData = new FormData(form);
-
-    // Decide which Python route to hit based on the current mode
     const endpoint = isLoginMode ? `${API}/login` : `${API}/register`;
 
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await response.json();
+      const response = await fetch(endpoint, { method: 'POST', body: formData });
+      const data     = await response.json();
 
       if (response.ok) {
-        // Save user memory and refresh to show Dashboard!
         localStorage.setItem('gasfinder_user', data.username);
-        window.location.reload(); 
+        window.location.reload();
       } else {
         alert(data.error || 'Authentication failed.');
       }
@@ -877,81 +950,71 @@
     }
   }
 
-  // ── 1. CHECK LOGIN STATE & LOAD PROFILE ──
+  // ── CHECK LOGIN STATE ──
   async function checkLoginState() {
-    const savedUser = localStorage.getItem('gasfinder_user');
+    const savedUser       = localStorage.getItem('gasfinder_user');
     const registerSection = document.querySelector('.register-wrap');
-    
+
     if (savedUser && registerSection) {
       try {
-        // Fetch the user's data from Python
         const res = await fetch(`${API}/profile?username=${savedUser}`);
-        
         if (res.ok) {
-          const u = await res.json(); 
-          
-          // Build a sleek, read-only display card
+          const u = await res.json();
           registerSection.innerHTML = `
-            <div class="register-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+            <div class="register-header" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
               <div>
                 <h2>Welcome back, ${savedUser}!</h2>
                 <p>Your Active Vehicle Profile</p>
               </div>
-              <button class="btn btn-outline" onclick="logout()" style="width: auto; margin-top: 0;">Log Out</button>
+              <button class="btn btn-outline" onclick="logout()" style="width:auto;margin-top:0;">Log Out</button>
             </div>
-
-            <div class="register-grid" style="background: var(--card); padding: 1.5rem; border-radius: 4px; border: 1px solid var(--border);">
-              
+            <div class="register-grid" style="background:var(--card);padding:1.5rem;border-radius:4px;border:1px solid var(--border);">
               <div class="field">
                 <label>Fuel Preference</label>
-                <div style="font-family: var(--font-mono); font-size: 1.2rem; color: var(--accent); font-weight: 600;">
+                <div style="font-family:var(--font-mono);font-size:1.2rem;color:var(--accent);font-weight:600;">
                   ${u.preffered_fuel || 'Not set'}
                 </div>
               </div>
-
               <div class="field">
                 <label>Vehicle</label>
-                <div style="font-family: var(--font-mono); font-size: 1.1rem;">
+                <div style="font-family:var(--font-mono);font-size:1.1rem;">
                   ${u.car_year || ''} ${u.car_make || ''} ${u.car_model || 'Not set'}
                 </div>
               </div>
-
               <div class="field">
                 <label>Tank Size</label>
-                <div style="font-family: var(--font-mono); font-size: 1.1rem;">
+                <div style="font-family:var(--font-mono);font-size:1.1rem;">
                   ${u.tank_size ? u.tank_size + ' Gallons' : 'Not set'}
                 </div>
               </div>
-
               <div class="field">
                 <label>Average MPG</label>
-                <div style="font-family: var(--font-mono); font-size: 1.1rem;">
+                <div style="font-family:var(--font-mono);font-size:1.1rem;">
                   ${u.mpg || 'Not set'}
                 </div>
               </div>
-
             </div>
           `;
         }
       } catch (error) {
-        console.error("Failed to load profile data", error);
+        console.error('Failed to load profile data', error);
       }
     }
   }
 
-  // ── 2. LOG OUT FUNCTION ──
   function logout() {
-    // Delete the saved user from memory
     localStorage.removeItem('gasfinder_user');
-    // Refresh the page so the registration form comes back
     window.location.reload();
   }
 
-  // ── 3. RUN THE CHECK IMMEDIATELY ──
-  checkLoginState();
-
   // ── INIT ──
-  loadStations();
+  async function init() {
+    checkLoginState();
+    await loadFavoritedIds();
+    loadStations();
+  }
+
+  init();
 </script>
 </body>
 </html>

@@ -464,9 +464,10 @@ def get_profile():
     
     # Fetch the vehicle data for this specific user
     cursor.execute("""
-        SELECT preffered_fuel, car_make, car_model, car_year, tank_size, mpg 
-        FROM users WHERE username = %s
-    """, (username,))
+        SELECT username, preffered_fuel, car_make, car_model, car_year, 
+           tank_size, mpg, created_at 
+    FROM users WHERE username = %s
+""", (username,))
     
     user_data = cursor.fetchone()
     cursor.close()
