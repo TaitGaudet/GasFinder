@@ -100,6 +100,66 @@
       padding: 2rem 2.5rem 4rem;
     }
 
+    /* ── REGISTRATION SECTION ── */
+    .register-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .register-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+
+    .register-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .register-header h2 {
+      font-family: var(--font-head);
+      font-size: 2.2rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .register-header p {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+    }
+
+    .register-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* Override the 160px width from the toolbar just for this section */
+    .register-grid .field input,
+    .register-grid .field select {
+      width: 100%;
+    }
+
+    .register-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
     /* ── STATS BAR ── */
     .stats-bar {
       display: grid;
@@ -453,12 +513,68 @@
 
 <main>
 
-  <form action="/api/register" method="POST">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="user_name">
-    
-    <button type="submit">Submit</button>
-  </form>
+  <div class="register-wrap">
+    <div class="register-header">
+      <h2>Vehicle Profile</h2>
+      <p>Register to unlock personalized fuel tracking</p>
+    </div>
+
+    <form action="http://localhost:5000/api/register" method="POST">
+      <div class="register-grid">
+        
+        <div class="field">
+          <label for="username">System Username</label>
+          <input type="text" id="username" name="username" required autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label for="password">Access Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="field">
+          <label for="preffered_fuel">Preferred Fuel</label>
+          <select id="preffered_fuel" name="preffered_fuel" required>
+            <option value="" disabled selected>-- Select Type --</option>
+            <option value="Regular">Regular</option>
+            <option value="Midgrade">Midgrade</option>
+            <option value="Premium">Premium</option>
+            <option value="Diesel">Diesel</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="car_make">Make</label>
+          <input type="text" id="car_make" name="car_make" placeholder="e.g. Ford">
+        </div>
+
+        <div class="field">
+          <label for="car_model">Model</label>
+          <input type="text" id="car_model" name="car_model" placeholder="e.g. F-150">
+        </div>
+
+        <div class="field">
+          <label for="car_year">Year</label>
+          <input type="number" id="car_year" name="car_year" min="1950" max="2027">
+        </div>
+
+        <div class="field">
+          <label for="tank_size">Tank (Gal)</label>
+          <input type="number" id="tank_size" name="tank_size" step="0.1">
+        </div>
+
+        <div class="field">
+          <label for="mpg">Average MPG</label>
+          <input type="number" id="mpg" name="mpg" step="0.1">
+        </div>
+
+      </div>
+
+      <div class="register-actions">
+        <button type="submit" class="btn btn-primary">Initialize Profile</button>
+      </div>
+    </form>
+  </div>
 
   <!-- STATS BAR -->
   <div class="stats-bar">
@@ -692,6 +808,36 @@
       console.error('Recommend failed', e);
     }
   }
+
+  // ── CHECK IF LOGGED IN ──
+  function checkLoginState() {
+    const savedUser = localStorage.getItem('gasfinder_user');
+    const registerSection = document.querySelector('.register-wrap');
+    
+    // If we found a username saved in the browser...
+    if (savedUser && registerSection) {
+      // Replace the entire form with a sleek welcome message
+      registerSection.innerHTML = `
+        <div class="register-header" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2>Welcome back, ${savedUser}!</h2>
+            <p>Your vehicle profile is active.</p>
+          </div>
+          <button class="btn btn-outline" onclick="logout()" style="width: auto; margin-top: 0;">Log Out</button>
+        </div>
+      `;
+    }
+  }
+
+  // ── LOG OUT FUNCTION ──
+  function logout() {
+    // Erase the name from the browser's notepad and refresh the page
+    localStorage.removeItem('gasfinder_user');
+    window.location.reload();
+  }
+
+  // Run the check as soon as the page loads!
+  checkLoginState();
 
   // ── INIT ──
   loadStations();
