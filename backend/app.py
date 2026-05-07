@@ -381,49 +381,45 @@ def get_price_history(station_id):
 
 @app.route('/api/register', methods=['POST'])
 def register_user():
-    # 1. Catch all the new data from the form
-    # (Notice we changed 'user_name' to 'username' to match your database and the new HTML)
     username = request.form.get('username')
     password = request.form.get('password')
     fuel = request.form.get('preffered_fuel')
     make = request.form.get('car_make')
     model = request.form.get('car_model')
     
-    # For numbers, it's a good practice to convert empty strings to None (NULL in SQL)
     year = request.form.get('car_year') or None
     tank = request.form.get('tank_size') or None
     mpg = request.form.get('mpg') or None
 
-    # 2. Hash the password! Never store raw passwords in the database.
     hashed_pw = generate_password_hash(password)
 
-    # 3. The SQL Query
-    # (This matches the exact columns from your init.sql table)
     sql_query = """
         INSERT INTO users 
         (username, password_hash, preffered_fuel, car_make, car_model, car_year, tank_size, mpg)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """
-    
-    # The tuple of values to safely inject into the %s placeholders
     sql_values = (username, hashed_pw, fuel, make, model, year, tank, mpg)
 
-    # 4. Execute the query
-    # Replace these lines with however you connect to your database (e.g., PyMySQL, mysql-connector)
+    # We need to actually open the database connection here!
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
     try:
-        # cursor.execute(sql_query, sql_values)
-        # db_connection.commit()
-        return f"""
-        <script>
-            localStorage.setItem('gasfinder_user', '{username}');
-            alert('Success! Profile successfully created for {username}.');
-            window.location.href = document.referrer;
-        </script>
-        """
+        # Execute and commit the save to the database
+        cursor.execute(sql_query, sql_values)
+        conn.commit()
+        
+        # Close connections
+        cursor.close()
+        conn.close()
+        
+        # Return a success JSON response
+        return jsonify({"message": f"Profile created for {username}", "username": username}), 200
     
     except Exception as e:
-        # If the username already exists, it will throw an error because of your UNIQUE constraint
-        return f"Error registering vehicle profile: {str(e)}", 400
+        cursor.close()
+        conn.close()
+        return jsonify({"error": f"Error registering: {str(e)}"}), 400
     
     
 

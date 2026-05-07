@@ -519,7 +519,7 @@
       <p>Register to unlock personalized fuel tracking</p>
     </div>
 
-    <form action="http://localhost:5000/api/register" method="POST">
+    <form id="registerForm" onsubmit="submitRegistration(event)">
       <div class="register-grid">
         
         <div class="field">
@@ -809,19 +809,53 @@
     }
   }
 
-  // ── CHECK IF LOGGED IN ──
+  // ── SUBMIT REGISTRATION IN BACKGROUND ──
+  async function submitRegistration(event) {
+    // Stop the browser from leaving the page
+    event.preventDefault(); 
+    
+    const form = document.getElementById('registerForm');
+    const formData = new FormData(form);
+
+    try {
+      // Send the data to Python silently
+      const response = await fetch(`${API}/register`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Save to the CORRECT local storage
+        localStorage.setItem('gasfinder_user', data.username);
+        alert('Success! Your profile is ready.');
+        // Refresh the page to show the Welcome Banner
+        window.location.reload(); 
+      } else {
+        alert(data.error || 'Registration failed.');
+      }
+    } catch (error) {
+      alert('Could not connect to the server.');
+      console.error(error);
+    }
+  }
+
+  // ── 1. CHECK LOGIN STATE ──
   function checkLoginState() {
+    // Look inside the browser's memory for a saved username
     const savedUser = localStorage.getItem('gasfinder_user');
+    
+    // Find the registration box on your page
     const registerSection = document.querySelector('.register-wrap');
     
-    // If we found a username saved in the browser...
+    // If a user is saved AND the box exists, overwrite the HTML!
     if (savedUser && registerSection) {
-      // Replace the entire form with a sleek welcome message
       registerSection.innerHTML = `
         <div class="register-header" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
           <div>
             <h2>Welcome back, ${savedUser}!</h2>
-            <p>Your vehicle profile is active.</p>
+            <p>Your vehicle profile is securely loaded.</p>
           </div>
           <button class="btn btn-outline" onclick="logout()" style="width: auto; margin-top: 0;">Log Out</button>
         </div>
@@ -829,14 +863,15 @@
     }
   }
 
-  // ── LOG OUT FUNCTION ──
+  // ── 2. LOG OUT FUNCTION ──
   function logout() {
-    // Erase the name from the browser's notepad and refresh the page
+    // Delete the saved user from memory
     localStorage.removeItem('gasfinder_user');
+    // Refresh the page so the registration form comes back
     window.location.reload();
   }
 
-  // Run the check as soon as the page loads!
+  // ── 3. RUN THE CHECK IMMEDIATELY ──
   checkLoginState();
 
   // ── INIT ──
