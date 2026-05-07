@@ -3,7 +3,7 @@ from flask_cors import CORS
 import mysql.connector
 import os
 from flask import Flask, render_template, request
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 CORS(app)
@@ -422,7 +422,30 @@ def register_user():
         return jsonify({"error": f"Error registering: {str(e)}"}), 400
     
     
+@app.route('/api/login', methods=['POST'])
+def login_user():
+    username = request.form.get('username')
+    password = request.form.get('password')
 
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Look up the user by their username
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+
+        # If the user exists AND the password matches the saved hash...
+        if user and check_password_hash(user['password_hash'], password):
+            return jsonify({"message": "Login successful", "username": username}), 200
+        else:
+            return jsonify({"error": "Invalid username or password."}), 401
+            
+    except Exception as e:
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # ─────────────────────────────────────────────
 # ENTRY POINT

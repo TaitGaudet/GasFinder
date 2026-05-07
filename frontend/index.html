@@ -515,11 +515,11 @@
 
   <div class="register-wrap">
     <div class="register-header">
-      <h2>Vehicle Profile</h2>
-      <p>Register to unlock personalized fuel tracking</p>
+      <h2 id="auth-title">Vehicle Profile</h2>
+      <p id="auth-subtitle">Register to unlock personalized fuel tracking</p>
     </div>
 
-    <form id="registerForm" onsubmit="submitRegistration(event)">
+    <form id="registerForm" onsubmit="submitAuth(event)">
       <div class="register-grid">
         
         <div class="field">
@@ -532,7 +532,7 @@
           <input type="password" id="password" name="password" required>
         </div>
 
-        <div class="field">
+        <div class="field extra-field">
           <label for="preffered_fuel">Preferred Fuel</label>
           <select id="preffered_fuel" name="preffered_fuel" required>
             <option value="" disabled selected>-- Select Type --</option>
@@ -543,35 +543,39 @@
           </select>
         </div>
 
-        <div class="field">
+        <div class="field extra-field">
           <label for="car_make">Make</label>
           <input type="text" id="car_make" name="car_make" placeholder="e.g. Ford">
         </div>
 
-        <div class="field">
+        <div class="field extra-field">
           <label for="car_model">Model</label>
           <input type="text" id="car_model" name="car_model" placeholder="e.g. F-150">
         </div>
 
-        <div class="field">
+        <div class="field extra-field">
           <label for="car_year">Year</label>
           <input type="number" id="car_year" name="car_year" min="1950" max="2027">
         </div>
 
-        <div class="field">
+        <div class="field extra-field">
           <label for="tank_size">Tank (Gal)</label>
           <input type="number" id="tank_size" name="tank_size" step="0.1">
         </div>
 
-        <div class="field">
+        <div class="field extra-field">
           <label for="mpg">Average MPG</label>
           <input type="number" id="mpg" name="mpg" step="0.1">
         </div>
 
       </div>
 
-      <div class="register-actions">
-        <button type="submit" class="btn btn-primary">Initialize Profile</button>
+      <div class="register-actions" style="flex-direction: column; align-items: center; gap: 1rem;">
+        <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%;">Initialize Profile</button>
+        
+        <a href="#" onclick="toggleAuthMode(event)" id="auth-toggle-btn" style="color: var(--accent); font-family: var(--font-mono); font-size: 0.75rem; text-decoration: none;">
+          Already registered? Log in here.
+        </a>
       </div>
     </form>
   </div>
@@ -809,17 +813,51 @@
     }
   }
 
-  // ── SUBMIT REGISTRATION IN BACKGROUND ──
-  async function submitRegistration(event) {
-    // Stop the browser from leaving the page
-    event.preventDefault(); 
+  // ── AUTHENTICATION SYSTEM ──
+  let isLoginMode = false;
+
+  function toggleAuthMode(event) {
+    event.preventDefault(); // Stop the link from scrolling to the top
+    isLoginMode = !isLoginMode;
     
+    const extraFields = document.querySelectorAll('.extra-field');
+    const title = document.getElementById('auth-title');
+    const subtitle = document.getElementById('auth-subtitle');
+    const submitBtn = document.getElementById('auth-submit-btn');
+    const toggleBtn = document.getElementById('auth-toggle-btn');
+    const fuelDropdown = document.getElementById('preffered_fuel');
+
+    if (isLoginMode) {
+      // Switch to Login UI
+      extraFields.forEach(el => el.style.display = 'none');
+      fuelDropdown.removeAttribute('required'); // Prevent form from demanding fuel type on login
+      
+      title.textContent = "System Access";
+      subtitle.textContent = "Enter your credentials to continue.";
+      submitBtn.textContent = "Authenticate";
+      toggleBtn.textContent = "Need a profile? Register here.";
+    } else {
+      // Switch back to Register UI
+      extraFields.forEach(el => el.style.display = 'flex');
+      fuelDropdown.setAttribute('required', 'true');
+      
+      title.textContent = "Vehicle Profile";
+      subtitle.textContent = "Register to unlock personalized fuel tracking";
+      submitBtn.textContent = "Initialize Profile";
+      toggleBtn.textContent = "Already registered? Log in here.";
+    }
+  }
+
+  async function submitAuth(event) {
+    event.preventDefault(); 
     const form = document.getElementById('registerForm');
     const formData = new FormData(form);
 
+    // Decide which Python route to hit based on the current mode
+    const endpoint = isLoginMode ? `${API}/login` : `${API}/register`;
+
     try {
-      // Send the data to Python silently
-      const response = await fetch(`${API}/register`, {
+      const response = await fetch(endpoint, {
         method: 'POST',
         body: formData
       });
@@ -827,13 +865,11 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Save to the CORRECT local storage
+        // Save user memory and refresh to show Dashboard!
         localStorage.setItem('gasfinder_user', data.username);
-        alert('Success! Your profile is ready.');
-        // Refresh the page to show the Welcome Banner
         window.location.reload(); 
       } else {
-        alert(data.error || 'Registration failed.');
+        alert(data.error || 'Authentication failed.');
       }
     } catch (error) {
       alert('Could not connect to the server.');
