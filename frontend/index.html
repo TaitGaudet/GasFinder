@@ -854,12 +854,10 @@
   async function applyFilters() {
     const price = document.getElementById('filter-price').value;
     const dist  = document.getElementById('filter-dist').value;
-    const fuel  = document.getElementById('filter-fuel').value;
 
     const params = new URLSearchParams();
     if (price) params.append('max_price', price);
     if (dist)  params.append('max_distance', dist);
-    if (fuel)  params.append('fuel_type', fuel);
 
     document.getElementById('station-tbody').innerHTML =
       '<tr><td colspan="7" class="state-msg"><span class="spinner"></span> Filtering...</td></tr>';
@@ -886,14 +884,12 @@
 
   // ── RECOMMENDATION ──
   async function getRecommendation() {
-    const fuel  = document.getElementById('filter-fuel').value || 'regular';
     const dist  = document.getElementById('filter-dist').value;
     const price = document.getElementById('filter-price').value;
 
     const params = new URLSearchParams();
     if (price) params.append('max_price', price);
     if (dist)  params.append('max_distance', dist);
-    if (fuel)  params.append('fuel_type', fuel);
 
     try {
       const res = await fetch(`${API}/stations/recommend?${params}`);

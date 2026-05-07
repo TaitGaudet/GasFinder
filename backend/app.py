@@ -172,7 +172,7 @@ def recommend():
 
     max_price = request.args.get('max_price')
     max_distance = request.args.get('max_distance')
-    fuel_type = request.args.get('fuel_type')
+    fuel_type = request.args.get('fuel_type', 'regular')
 
     valid_fuel_types = ['regular', 'midgrade', 'premium', 'diesel']
 
@@ -464,10 +464,9 @@ def get_profile():
     
     # Fetch the vehicle data for this specific user
     cursor.execute("""
-        SELECT username, preffered_fuel, car_make, car_model, car_year, 
-           tank_size, mpg, created_at 
-    FROM users WHERE username = %s
-""", (username,))
+        SELECT preffered_fuel, car_make, car_model, car_year, tank_size, mpg 
+        FROM users WHERE username = %s
+    """, (username,))
     
     user_data = cursor.fetchone()
     cursor.close()
