@@ -877,25 +877,65 @@
     }
   }
 
-  // ── 1. CHECK LOGIN STATE ──
-  function checkLoginState() {
-    // Look inside the browser's memory for a saved username
+  // ── 1. CHECK LOGIN STATE & LOAD PROFILE ──
+  async function checkLoginState() {
     const savedUser = localStorage.getItem('gasfinder_user');
-    
-    // Find the registration box on your page
     const registerSection = document.querySelector('.register-wrap');
     
-    // If a user is saved AND the box exists, overwrite the HTML!
     if (savedUser && registerSection) {
-      registerSection.innerHTML = `
-        <div class="register-header" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h2>Welcome back, ${savedUser}!</h2>
-            <p>Your vehicle profile is securely loaded.</p>
-          </div>
-          <button class="btn btn-outline" onclick="logout()" style="width: auto; margin-top: 0;">Log Out</button>
-        </div>
-      `;
+      try {
+        // Fetch the user's data from Python
+        const res = await fetch(`${API}/profile?username=${savedUser}`);
+        
+        if (res.ok) {
+          const u = await res.json(); 
+          
+          // Build a sleek, read-only display card
+          registerSection.innerHTML = `
+            <div class="register-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+              <div>
+                <h2>Welcome back, ${savedUser}!</h2>
+                <p>Your Active Vehicle Profile</p>
+              </div>
+              <button class="btn btn-outline" onclick="logout()" style="width: auto; margin-top: 0;">Log Out</button>
+            </div>
+
+            <div class="register-grid" style="background: var(--card); padding: 1.5rem; border-radius: 4px; border: 1px solid var(--border);">
+              
+              <div class="field">
+                <label>Fuel Preference</label>
+                <div style="font-family: var(--font-mono); font-size: 1.2rem; color: var(--accent); font-weight: 600;">
+                  ${u.preffered_fuel || 'Not set'}
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Vehicle</label>
+                <div style="font-family: var(--font-mono); font-size: 1.1rem;">
+                  ${u.car_year || ''} ${u.car_make || ''} ${u.car_model || 'Not set'}
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Tank Size</label>
+                <div style="font-family: var(--font-mono); font-size: 1.1rem;">
+                  ${u.tank_size ? u.tank_size + ' Gallons' : 'Not set'}
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Average MPG</label>
+                <div style="font-family: var(--font-mono); font-size: 1.1rem;">
+                  ${u.mpg || 'Not set'}
+                </div>
+              </div>
+
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error("Failed to load profile data", error);
+      }
     }
   }
 

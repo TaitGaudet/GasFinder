@@ -447,6 +447,35 @@ def login_user():
         cursor.close()
         conn.close()
 
+
+
+# ─────────────────────────────────────────────
+# PROFILE ROUTE
+# ─────────────────────────────────────────────
+
+@app.route('/api/profile', methods=['GET'])
+def get_profile():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({"error": "Username is required"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    # Fetch the vehicle data for this specific user
+    cursor.execute("""
+        SELECT preffered_fuel, car_make, car_model, car_year, tank_size, mpg 
+        FROM users WHERE username = %s
+    """, (username,))
+    
+    user_data = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if user_data:
+        return jsonify(user_data), 200
+    return jsonify({"error": "User not found"}), 404
+
 # ─────────────────────────────────────────────
 # ENTRY POINT
 # ─────────────────────────────────────────────
